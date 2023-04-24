@@ -5,8 +5,8 @@ import java.util.Arrays
 import sys.process._
 
 //Configurations:
-var parquet_file_path = "/PATH/TO/TPCH_PARQUET_PATH"
-var gluten_root = "/PATH/TO/GLUTEN"
+var parquet_file_path = "/workspaces/gluten/storage/tpch-data/sf100"
+var gluten_root = "/workspaces/gluten"
 
 def time[R](block: => R): R = {
     val t0 = System.nanoTime()
@@ -47,7 +47,7 @@ def getListOfFiles(dir: String):List[File] = {
          List[File]()
      }
 }
-val fileLists = getListOfFiles(gluten_root + "/gluten-core/src/test/resources/tpch-data/")
+val fileLists = getListOfFiles(gluten_root + "/gluten-core/src/test/resources/tpch-queries/")
 val sorted = fileLists.sortBy {
        f => f.getName match {
        case name =>

@@ -5,8 +5,8 @@ import java.util.Arrays
 import sys.process._
 
 // Configurations:
-var parquet_file_path = "/PATH/TO/TPCDS_PARQUET_PATH"
-var gluten_root = "/PATH/TO/GLUTEN"
+var parquet_file_path = "/workspaces/gluten/tpcds-data/sf100"
+var gluten_root = "/workspaces/gluten"
 
 def time[R](block: => R): R = {
     val t0 = System.nanoTime()
