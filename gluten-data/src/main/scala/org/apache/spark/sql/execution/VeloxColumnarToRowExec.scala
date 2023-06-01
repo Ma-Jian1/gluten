@@ -36,6 +36,7 @@ import scala.collection.JavaConverters._
 import scala.concurrent.duration.NANOSECONDS
 import org.apache.spark.sql.execution.metric.SQLMetric
 import org.apache.spark.sql.vectorized.ColumnarBatch
+import org.apache.spark.unsafe.Platform
 import org.apache.spark.util.memory.TaskResources
 
 case class VeloxColumnarToRowExec(child: SparkPlan)
@@ -194,7 +195,11 @@ class GlutenColumnarToRowRDD(@transient sc: SparkContext, rdd: RDD[ColumnarBatch
           override def next: UnsafeRow = {
             if (rowId >= batch.numRows()) throw new NoSuchElementException
             val (offset, length) = (info.offsets(rowId), info.lengths(rowId))
-            row.pointTo(null, info.memoryAddress + offset, length.toInt)
+            // row.pointTo(null, info.memoryAddress + offset, length.toInt)
+            // workaround: seems UnsafeRow cares about baseObject type
+            val rowDataCopy: Array[Byte] = new Array[Byte](length)
+            Platform.copyMemory(null, info.memoryAddress+offset, rowDataCopy, Platform.BYTE_ARRAY_OFFSET, length)
+            row.pointTo(rowDataCopy, length)
             rowId += 1
             row
           }
